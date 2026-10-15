@@ -1,1 +1,1 @@
-# DatabrickHelloWorld
+# DatabricksHelloWorld
