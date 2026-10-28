@@ -1,10 +1,10 @@
-name: Automerge
+name: Automerge 
 
 on:
   workflow_dispatch:
   schedule:
     # You can setup schedule here
-    - cron: '0 0 * * *'
+    - cron: '0 12 * * *'
 
 env:
   # replace "github_username" with your GitHub username
