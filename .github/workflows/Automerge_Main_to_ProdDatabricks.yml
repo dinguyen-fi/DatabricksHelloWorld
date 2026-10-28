@@ -1,0 +1,45 @@
+name: Automerge Main to ProdDatabricks
+
+on:
+  workflow_dispatch:
+  schedule:
+    # You can setup schedule here
+    - cron: '0 13 * * *'
+  push:
+    branches:
+      # ProdDatabricks
+      - template/databrickshelloworld-1792097787844
+      
+permissions:
+  contents: write
+
+jobs:
+  merge-to-main:
+    runs-on: ubuntu-26.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        fetch-depth: 0 # Fetches all history for all branches
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "dinguyen-fi"
+        git config --global user.email "di.nguyen@fi.com"
+
+    - name: Merge main into ProdDatabricks
+      run: |
+        # Switch to ProdDatabricks branch
+        git checkout template/databrickshelloworld-1792097787844
+        
+        # Pull the latest changes from remote main
+        git pull origin template/databrickshelloworld-1792097787844
+        
+        # Merge main into ProdDatabricks
+        # Using --no-ff creates a merge commit; change to --ff-only if preferred
+        git merge origin/main --no-edit
+        
+        # Push the changes back to remote ProdDatabricks
+        git push origin template/databrickshelloworld-1792097787844
