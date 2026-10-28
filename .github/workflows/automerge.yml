@@ -1,41 +1,47 @@
-name: Automerge Branches
+name: Automerge Develop to Main
 
 on:
   workflow_dispatch:
   schedule:
     # You can setup schedule here
     - cron: '0 12 * * *'
-
+  push:
+    branches:
+      # develop
+      - template/databrickshelloworld-1792097787844
+      
 permissions:
   contents: write
 
-env:
-  # replace "github_username" with your GitHub username
-  # replace "github.com/username/repo.git" with your GitHub repo path
-  # do NOT replace ${{secrets.GITHUB_TOKEN}}, GitHub will take care of it
-  # MY_REPO: https://github_username:${{secrets.GITHUB_TOKEN}}@github.com/username/repo.git
-  MY_REPO: https://github.com/dinguyen-fi/DatabricksHelloWorld.git
-
-  # replace "long-lived_branch_name" with your branch name
-  MY_BRANCH: template/databrickshelloworld-1792097787844
-
-  # replace it with the path to master repo
-  MASTER_REPO: https://github.com/dinguyen-fi/DatabricksHelloWorld.git
-
-  # replace "master" with your master branch name
-  MASTER_BRANCH: main
-
 jobs:
-  merge:
+  merge-to-main:
     runs-on: ubuntu-26.04
 
     steps:
-    - name: Merge with master
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: main
+        fetch-depth: 0 # Fetches all history for all branches
+
+    - name: Configure Git
       run: |
-        git clone ${{env.MY_REPO}} -b ${{env.MY_BRANCH}} tmp
-        cd tmp
-        git config user.name "dinguyen-fi"
-        git config user.email "di.nguyen@fi.com"
-        git config pull.rebase false
-        git pull ${{env.MASTER_REPO}} ${{env.MASTER_BRANCH}}
-        git push
+        git config --global user.name "dinguyen-fi"
+        git config --global user.email "di.nguyen@fi.com"
+
+    - name: Merge develop into main    
+      run: |
+        # Switch to main branch
+        git checkout main
+        
+        # Pull the latest changes from remote main
+        git pull origin main
+        
+        # Merge develop into main
+        # Using --no-ff creates a merge commit; change to --ff-only if preferred
+        git merge origin/template/databrickshelloworld-1792097787844 --no-edit
+        
+        # Push the changes back to remote main
+        git push origin main
+          
+
